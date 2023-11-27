@@ -1,16 +1,25 @@
 /* Nestjs Dependencies */
-import { Controller, Get, HttpException, HttpStatus, Res } from '@nestjs/common';
+import {
+	Controller,
+	Get,
+	HttpException,
+	HttpStatus,
+	Res,
+} from '@nestjs/common';
 import { FastifyReply } from 'fastify';
 
 /* Other Dependencies */
 import { ResponseMessage } from 'src/common/message/message.enum';
 import { TidyResponse } from 'src/util/responseHelper';
+import { ExampleService } from './example.service';
 
 /* DTO */
 // import { ExampleDTO } from './dto/example.dto'; // example DTO
 
 @Controller('example')
 export class ExampleController {
+	constructor(private readonly exampleService: ExampleService) {}
+
 	@Get()
 	getHello(@Res() res: FastifyReply) {
 		const data = {
@@ -38,5 +47,11 @@ export class ExampleController {
 			foo: 'bar',
 		};
 		throw new HttpException(data, HttpStatus.BAD_REQUEST);
+	}
+
+	@Get('fona-members')
+	async getFonaMembers(@Res() res: FastifyReply) {
+		const data = await this.exampleService.getFonaMembersWithLearningPath();
+		return new TidyResponse(HttpStatus.OK, ResponseMessage.OK, data);
 	}
 }
